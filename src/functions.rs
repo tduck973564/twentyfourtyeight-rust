@@ -9,6 +9,18 @@ fn random_from_slice<T>(array: &[T]) -> &T {
     }
 }
 
+#[derive(PartialEq)]
+pub enum VerticalDirections {
+    Up,
+    Down,
+}
+
+#[derive(PartialEq)]
+pub enum HorizontalDirections {
+    Left,
+    Right,
+}
+
 impl Grid {
     pub fn new() -> Grid {
         Grid(
@@ -58,102 +70,90 @@ impl Grid {
 
     // Movement
 
-    pub fn move_up(&mut self) {
+    pub fn move_vertical(&mut self, direction: VerticalDirections) {
+        let border_number = match direction { VerticalDirections::Up => 0, VerticalDirections::Down => 3 };
         for _ in 0..4 {
             for (row_index, row) in self.0.clone().iter().enumerate() {
-                for (index, &item) in row.iter().clone().enumerate() {
-                    if row_index == 0 { 
-                        break; 
-                    } else if item > 0 && self.0[row_index - 1][index] == 0 {
-                        self.0[row_index - 1][index] = item.clone();
+                for (index, &item) in row.clone().iter().enumerate() {
+                    if row_index == border_number {
+                        break;
+                    }
+                    let operation = match direction { VerticalDirections::Up => row_index - 1, VerticalDirections::Down => row_index + 1 };
+                    if item > 0 && self.0[operation][index] == 0 {
+                        self.0[operation][index] = item.clone();
                         self.0[row_index ][index] = 0;
                     }
                 }
-            } 
+            }
         }
         for (row_index, row) in self.0.clone().iter().enumerate() {
-            for (index, &item) in row.iter().clone().enumerate() {
-                if row_index == 0 {
+            for (index, &item) in row.clone().iter().enumerate() {
+                if row_index == border_number {
                     break;
-                } else if item > 0 && self.0[row_index - 1][index] == item {
-                    self.0[row_index - 1][index] = item * 2;
+                }
+                let operation = match direction { VerticalDirections::Up => row_index - 1, VerticalDirections::Down => row_index + 1 };
+                if item > 0 && self.0[operation][index] == item {
+                    self.0[operation][index] = item * 2;
                     self.0[row_index][index] = 0;
                     self.1 += item * 2;
                 }
             }
         }
-    }
-    pub fn move_down(&mut self) {
         for _ in 0..4 {
             for (row_index, row) in self.0.clone().iter().enumerate() {
-                for (index, &item) in row.iter().clone().enumerate() {
-                    if row_index == 3 { 
-                        break; 
-                    } else if item > 0 && self.0[row_index + 1][index] == 0 {
-                        self.0[row_index + 1][index] = item.clone();
+                for (index, &item) in row.clone().iter().enumerate() {
+                    if row_index == border_number {
+                        break;
+                    }
+                    let operation = match direction { VerticalDirections::Up => row_index - 1, VerticalDirections::Down => row_index + 1 };
+                    if item > 0 && self.0[operation][index] == 0 {
+                        self.0[operation][index] = item.clone();
                         self.0[row_index ][index] = 0;
                     }
-                }
-            } 
-        }
-        for (row_index, row) in self.0.clone().iter().enumerate() {
-            for (index, &item) in row.iter().clone().enumerate() {
-                if row_index == 3 {
-                    break;
-                } else if item > 0 && self.0[row_index + 1][index] == item {
-                    self.0[row_index + 1][index] = item * 2;
-                    self.0[row_index][index] = 0;
-                    self.1 += item * 2;
                 }
             }
         }
     }
-    pub fn move_left(&mut self) {
+    pub fn move_horizontal(&mut self, direction: HorizontalDirections) {
+        let border_number = match direction { HorizontalDirections::Left => 0, HorizontalDirections::Right => 3 };
         for _ in 0..4 {
             for (row_index, row) in self.0.clone().iter().enumerate() {
-                for (index, &item) in row.iter().clone().enumerate() {
-                    if index == 0 { 
+                for (index, &item) in row.clone().iter().enumerate() {
+                    if index == border_number {
                         continue;
-                    } else if item > 0 && self.0[row_index][index - 1] == 0 {
-                        self.0[row_index][index - 1] = item.clone();
+                    }
+                    let operation = match direction { HorizontalDirections::Left => index - 1, HorizontalDirections::Right => index + 1 };
+                    if item > 0 && self.0[row_index][operation] == 0 {
+                        self.0[row_index][operation] = item.clone();
                         self.0[row_index ][index] = 0;
                     }
                 }
-            } 
+            }
         }
         for (row_index, row) in self.0.clone().iter().enumerate() {
-            for (index, &item) in row.iter().clone().enumerate() {
-                if index == 0 {
+            for (index, &item) in row.clone().iter().enumerate() {
+                if index == border_number {
                     continue;
-                } else if item > 0 && self.0[row_index][index - 1] == item {
-                    self.0[row_index][index - 1] = item * 2;
+                }
+                let operation = match direction { HorizontalDirections::Left => index - 1, HorizontalDirections::Right => index + 1 };
+                if item > 0 && self.0[row_index][operation] == item {
+                    self.0[row_index][operation] = item * 2;
                     self.0[row_index][index] = 0;
                     self.1 += item * 2;
                 }
             }
         }
-    }
-    pub fn move_right(&mut self) {
         for _ in 0..4 {
             for (row_index, row) in self.0.clone().iter().enumerate() {
-                for (index, &item) in row.iter().clone().enumerate() {
-                    if index == 3 { 
+                for (index, &item) in row.clone().iter().enumerate() {
+                    if index == border_number {
                         continue;
-                    } else if item > 0 && self.0[row_index][index + 1] == 0 {
-                        self.0[row_index][index + 1] = item.clone();
-                        self.0[row_index][index] = 0;
                     }
-                }
-            } 
-        }
-        for (row_index, row) in self.0.clone().iter().enumerate() {
-            for (index, &item) in row.iter().clone().enumerate() {
-                if index == 3 {
-                    continue; 
-                } else if item > 0 && self.0[row_index][index + 1] == item {
-                    self.0[row_index][index + 1] = item * 2;
-                    self.0[row_index][index] = 0;
-                    self.1 += item * 2;
+                    let operation = match direction { HorizontalDirections::Left => index - 1, HorizontalDirections::Right => index + 1 };
+                    if item > 0 && self.0[row_index][operation] == 0 {
+                        self.0[row_index][operation] = item.clone();
+                        self.0[row_index ][index] = 0;
+                    }
                 }
             }
         }

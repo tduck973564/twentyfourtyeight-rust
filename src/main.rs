@@ -7,6 +7,7 @@ fn main() {
     println!("Github repository at https://github.com/tduck973564/twentyfourtyeight-rust");
 
     let mut grid = functions::Grid::new();
+    grid.scr_refresh();
     loop {
         grid.spawn_block();
         if grid.check_status().0 == true {
@@ -20,16 +21,16 @@ fn main() {
             let mut buffer = String::new();
             stdin().read_line(&mut buffer).expect("could not read input"); buffer = buffer.trim().to_string();
             if buffer == "w".to_string() {
-                grid.move_up();
+                grid.move_vertical(functions::VerticalDirections::Up);
                 break;
             } else if buffer == "s".to_string() {
-                grid.move_down();
+                grid.move_vertical(functions::VerticalDirections::Down);
                 break;
             } else if buffer == "a".to_string() {
-                grid.move_left();
+                grid.move_horizontal(functions::HorizontalDirections::Left);
                 break;
             } else if buffer == "d".to_string() {
-                grid.move_right();
+                grid.move_horizontal(functions::HorizontalDirections::Right);
                 break;
             } else {
                 println!("Invalid control.");
